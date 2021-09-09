@@ -9,6 +9,15 @@ npx hardhat --network rinkeby compile
 ### deploy the contract
 npx hardhat --network rinkeby deploy
 ### verify the contract
-npx hardhat verify --network rinkeby 0x144B325153075d384f2e24edd07692DEcFd5E9d1
+npx hardhat verify --network rinkeby 0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404
 
+https://rinkeby.etherscan.io/address/0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404#code
+
+
+
+## TODO:
+
+1. Determining contract parameters
+2. Determine the SYMBOL of NFT
+3. Add a local test script
 

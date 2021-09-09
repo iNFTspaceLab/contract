@@ -29,9 +29,8 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
 
   console.log('1. V1 Infgspace has deployed at:', infgspace.address);
 
-  verify
   verifyAddress = infgspace.address;
-  // verifyAddress = '0x1dFe4482543a8088891684726A3d63059Aa0ea46';
+  // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
   await run("verify:verify", {
     address: verifyAddress,
     constructorArguments: params
