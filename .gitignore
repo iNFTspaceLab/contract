@@ -1,0 +1,13 @@
+
+#Hardhat files
+/deployments/*
+/cache/*
+/artifacts/*
+/node_modules/*
+/package-lock.json
+
+# System files
+/backup/*
+/*.DS_Store
+/.idea/*
+
