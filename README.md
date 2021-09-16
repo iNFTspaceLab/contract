@@ -9,9 +9,9 @@ npx hardhat --network rinkeby compile
 ### deploy the contract
 npx hardhat --network rinkeby deploy
 ### verify the contract
-npx hardhat verify --network rinkeby 0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404
+npx hardhat verify --network rinkeby 0xF6DA9E98DC9A072F8e2630cb72E613aCC532B129
 
-https://rinkeby.etherscan.io/address/0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404#code
+https://rinkeby.etherscan.io/address/0xF6DA9E98DC9A072F8e2630cb72E613aCC532B129#code
 
 
 
