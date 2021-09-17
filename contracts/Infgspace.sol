@@ -1388,7 +1388,6 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         uint256 lastMintTimestamp;  // Last mint timestamp
     }
 
-    address payable public collection;      // Received digital currency collection address
     uint256 public mintInterval = 24 hours; // Each minter can mint the cycle time
     uint256 public maxWorks = 0;            // Maximum number of works allowed for mint
     uint256 public mintedWorks = 0;         // The number of mint works that have been minted
@@ -1434,10 +1433,6 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
 
     function removeMinter(address _minter) public onlyOwner{
         minters[_minter].isMinter = false;
-    }
-
-    function setCollection(address payable _collection) public onlyOwner {
-        collection = _collection;
     }
 
     function setMintInterval(uint256 _mintInterval) public onlyOwner {
