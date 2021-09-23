@@ -7,15 +7,11 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
 
   const options = { from: deployer };
 
-  const Collection = '0x0f5Aa568c104eeCb5210950d4011C765b91453D1';
   const MaxWorks   = 10000;
-  const minWorkFee   = "100000000000000000";  //0.1 ether;
 
   // Construction parameters
   const params = [
-    Collection,
     MaxWorks,
-    minWorkFee,
   ];
 
   const infgspace = await deploy('Infgspace', {...options, args: params});
