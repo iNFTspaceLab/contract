@@ -1392,6 +1392,7 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
     uint256 public maxWorks = 0;            // Maximum number of works allowed for mint
     uint256 public mintedWorks = 0;         // The number of mint works that have been minted
     uint256 public nextTokenId = 1;
+    address public baseMinter;
 
     mapping (address => Minter) public minters;
 
@@ -1403,6 +1404,7 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
         maxWorks = _maxWorks;
         transferOwnership(msg.sender);
+        baseMinter = msg.sender;
     }
 
     function mint(string memory tokenURI) public {
@@ -1415,8 +1417,9 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
 
         uint256 __tokenId = nextTokenId;
         Fee[] memory fees=new Fee[](0);
-        _mint(msg.sender, __tokenId, fees);
+        _mint(baseMinter, __tokenId, fees);
         _setTokenURI(__tokenId, tokenURI);
+        _transferFrom(baseMinter, msg.sender, __tokenId);
 
         nextTokenId = nextTokenId.add(1);
         minters[msg.sender].lastMintTimestamp = block.timestamp;
@@ -1437,6 +1440,10 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
 
     function setMintInterval(uint256 _mintInterval) public onlyOwner {
         mintInterval = _mintInterval;
+    }
+
+    function setBaseMinter(address _baseMinter) public onlyOwner{
+        baseMinter = _baseMinter;
     }
 
     function setTokenURIPrefix(string memory tokenURIPrefix) public onlyOwner{
