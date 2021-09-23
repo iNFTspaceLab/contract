@@ -1386,98 +1386,64 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
     struct Minter {
         bool isMinter;              // minter valid state
         uint256 lastMintTimestamp;  // Last mint timestamp
-        uint256 remaiMintTimes;       // The times of mint remaining
     }
 
-    address payable public collection;      // Received digital currency collection address
     uint256 public mintInterval = 24 hours; // Each minter can mint the cycle time
     uint256 public maxWorks = 0;            // Maximum number of works allowed for mint
-    uint256 public allocatedWorks = 0;      // The number of mint works that have been allocated, note: it may not be the same as the number of mint works
-    uint256 public mintWorkFee = 0.1 ether; // Mint fee for a single work, note: it is not the gas fee for sending this transaction
+    uint256 public mintedWorks = 0;         // The number of mint works that have been minted
     uint256 public nextTokenId = 1;
+    address public baseMinter;
 
     mapping (address => Minter) public minters;
 
     event Mint(address owner, uint256 tokenId, string uri);
     event RegMinter(address owner);
-    event PayMintTimes(address owner, uint256 times);
 
 
-    constructor (address payable _collection, uint256 _maxWorks, uint256 _mintWorkFee) public {
+    constructor (uint256 _maxWorks) public {
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
-        collection = _collection;
         maxWorks = _maxWorks;
-        mintWorkFee = _mintWorkFee;
         transferOwnership(msg.sender);
+        baseMinter = msg.sender;
     }
 
     function mint(string memory tokenURI) public {
-        require(minters[msg.sender].isMinter, "minter is require");
-        require(minters[msg.sender].remaiMintTimes >= 1, "mint remain time is require");
+        if (minters[msg.sender].isMinter == false) {
+            regMinter();
+        }
+
+        require(mintedWorks < maxWorks, "Effective casting quota for works require");
         require(canMintInInterval(msg.sender), "mint in interval can not mint");
 
         uint256 __tokenId = nextTokenId;
         Fee[] memory fees=new Fee[](0);
-        _mint(msg.sender, __tokenId, fees);
+        _mint(baseMinter, __tokenId, fees);
         _setTokenURI(__tokenId, tokenURI);
+        _transferFrom(baseMinter, msg.sender, __tokenId);
 
         nextTokenId = nextTokenId.add(1);
         minters[msg.sender].lastMintTimestamp = block.timestamp;
-        minters[msg.sender].remaiMintTimes = minters[msg.sender].remaiMintTimes.sub(1);
+        mintedWorks = mintedWorks.add(1);
 
         emit Mint(msg.sender, __tokenId, tokenURI);
     }
 
-    function regMinter() public payable {
-        require(allocatedWorks < maxWorks, "Effective casting quota for works require");
-        require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
-        if (msg.value > mintWorkFee) {
-            uint256 refundFee = msg.value - mintWorkFee;
-            msg.sender.transfer(refundFee);
-        }
-
-        address(uint160(collection)).transfer(mintWorkFee);
-
+    function regMinter() public {
         minters[msg.sender].isMinter = true;
-        minters[msg.sender].remaiMintTimes = 1;
-        allocatedWorks = allocatedWorks.add(1);
 
         emit RegMinter(msg.sender);
-    }
-
-    function payMintTimes() public payable {
-        require(minters[msg.sender].isMinter, "minter is require");
-        require(allocatedWorks < maxWorks, "Effective casting quota for works require");
-        require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
-
-        uint256 times = msg.value.div(mintWorkFee);
-
-        if (msg.value%mintWorkFee != 0) {
-            uint256 refundFee = msg.value - mintWorkFee.mul(times);
-            msg.sender.transfer(refundFee);
-        }
-        address(uint160(collection)).transfer(mintWorkFee.mul(times));
-
-        minters[msg.sender].remaiMintTimes = minters[msg.sender].remaiMintTimes.add(times);
-        allocatedWorks = allocatedWorks.add(times);
-
-        emit PayMintTimes(msg.sender, times);
     }
 
     function removeMinter(address _minter) public onlyOwner{
         minters[_minter].isMinter = false;
     }
 
-    function setCollection(address payable _collection) public onlyOwner {
-        collection = _collection;
-    }
-
-    function setMintWorkFee(uint256 _mintWorkFee) public onlyOwner {
-        mintWorkFee = _mintWorkFee;
-    }
-
     function setMintInterval(uint256 _mintInterval) public onlyOwner {
         mintInterval = _mintInterval;
+    }
+
+    function setBaseMinter(address _baseMinter) public onlyOwner{
+        baseMinter = _baseMinter;
     }
 
     function setTokenURIPrefix(string memory tokenURIPrefix) public onlyOwner{
