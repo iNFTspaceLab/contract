@@ -1391,7 +1391,6 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
     uint256 public mintInterval = 24 hours; // Each minter can mint the cycle time
     uint256 public maxWorks = 0;            // Maximum number of works allowed for mint
     uint256 public mintedWorks = 0;         // The number of mint works that have been minted
-    uint256 public nextTokenId = 1;
     address public baseMinter;
 
     mapping (address => Minter) public minters;
@@ -1407,7 +1406,7 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         baseMinter = msg.sender;
     }
 
-    function mint(string memory tokenURI) public {
+    function mint(string memory tokenURI, uint256 tokenId) public {
         if (minters[msg.sender].isMinter == false) {
             regMinter();
         }
@@ -1415,17 +1414,15 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         require(mintedWorks < maxWorks, "Effective casting quota for works require");
         require(canMintInInterval(msg.sender), "mint in interval can not mint");
 
-        uint256 __tokenId = nextTokenId;
         Fee[] memory fees=new Fee[](0);
-        _mint(baseMinter, __tokenId, fees);
-        _setTokenURI(__tokenId, tokenURI);
-        _transferFrom(baseMinter, msg.sender, __tokenId);
+        _mint(baseMinter, tokenId, fees);
+        _setTokenURI(tokenId, tokenURI);
+        _transferFrom(baseMinter, msg.sender, tokenId);
 
-        nextTokenId = nextTokenId.add(1);
         minters[msg.sender].lastMintTimestamp = block.timestamp;
         mintedWorks = mintedWorks.add(1);
 
-        emit Mint(msg.sender, __tokenId, tokenURI);
+        emit Mint(msg.sender, tokenId, tokenURI);
     }
 
     function regMinter() public {
