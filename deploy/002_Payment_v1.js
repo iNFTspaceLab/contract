@@ -13,7 +13,6 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
   // Construction parameters
   const params = [
     Collection,
-    MaxWorks,
     minWorkFee,
   ];
 
