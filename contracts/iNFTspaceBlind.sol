@@ -1060,7 +1060,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
     constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
         name = "iNFTspaceBlind";
-        symbol = "iNFT";
+        symbol = "iNFTB";
 
         _addSigner(msg.sender);
         baseMinter = msg.sender;
@@ -1099,13 +1099,13 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
         minters[msg.sender].totalPayMintWorks = minters[msg.sender].totalPayMintWorks.add(times);
 
+        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times);
+
         if (minters[msg.sender].totalPayMintWorks % rewardThresholdWorks == 0) {
             times = times.add(1);
         }
 
         minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times);
-
-        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times);
     }
 
     function addSigner(address account) public onlyOwner {
@@ -1132,7 +1132,8 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         mintWorkFee = _mintWorkFee;
     }
 
-    function increaseMinterWorkTimes(address account, uint256 times) public onlyOwner {
+    function increaseMinterWorkTimes(address account, uint256 times) public {
+        require(isSigner(account) == true, "Only singer can increase minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
     }
 }
