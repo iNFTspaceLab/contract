@@ -54,6 +54,14 @@ library SafeMath {
         assert(c >= a);
         return c;
     }
+
+    /**
+* @dev Mod two numbers, throws on overflow.
+    */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256 c) {
+        assert(b > 0);
+        return a % b;
+    }
 }
 
 /**
@@ -1072,6 +1080,13 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         emit Mint(msg.sender, id, value, uri);
     }
 
+    function batchMint(uint256[] memory ids, uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, Fee[] memory fees, uint256[] memory values, string[] memory uris) public {
+        require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
+        for (uint256 i = 0; i < ids.length; i++) {
+            mint(ids[i], vs[i], rs[i], ss[i], fees, values[i], uris[i]);
+        }
+    }
+
     function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
@@ -1092,9 +1107,9 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
 
         uint256 times = msg.value.div(mintWorkFee);
-        uint256 rewardTimes = (minters[msg.sender].totalPayMintWorks % rewardThresholdWorks).add(times).div(rewardThresholdWorks);
+        uint256 rewardTimes = (minters[msg.sender].totalPayMintWorks.mod(rewardThresholdWorks).add(times).div(rewardThresholdWorks);
 
-        if (msg.value % mintWorkFee != 0) {
+        if (msg.value.mod(mintWorkFee)  != 0) {
             uint256 refundFee = msg.value - mintWorkFee.mul(times);
             msg.sender.transfer(refundFee);
         }
