@@ -41,10 +41,12 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
 
   console.log('1. V1 iNFTspaceBlind has deployed at:', infgspace.address);
 
-  let waitTime = 400;
+  let waitTime = 60; // 1 min
   for (var i = 0; i< waitTime; i++){
     await sleep(1000);
-    console.log('  wait deploy completed after', i, " s");
+    if ( i%3 == 0) {
+      console.log('  wait deploy completed after', waitTime - i, " s");
+    }
   }
   verifyAddress = infgspace.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
