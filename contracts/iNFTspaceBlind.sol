@@ -864,13 +864,13 @@ contract ERC1155Base is HasSecondarySaleFees, Ownable, ERC1155Metadata_URI, HasC
     }
 
     // Creates a new token type and assings _initialSupply to minter
-    function _create(address to, uint256 _id, Fee[] memory _fees, uint256 _supply, string memory _uri) internal {
-        require(to == address(0x0), "Can not create to zero address");
+    function _create(address _to, uint256 _id, Fee[] memory _fees, uint256 _supply, string memory _uri) internal {
+        require(_to != address(0x0), "Can not create to zero address");
         require(creators[_id] == address(0x0), "Token is already minted");
         require(_supply != 0, "Supply should be positive");
         require(bytes(_uri).length > 0, "uri should be set");
 
-        creators[_id] = to;
+        creators[_id] = _to;
         address[] memory recipients = new address[](_fees.length);
         uint[] memory bps = new uint[](_fees.length);
         for (uint i = 0; i < _fees.length; i++) {
@@ -883,21 +883,20 @@ contract ERC1155Base is HasSecondarySaleFees, Ownable, ERC1155Metadata_URI, HasC
         if (_fees.length > 0) {
             emit SecondarySaleFees(_id, recipients, bps);
         }
-        balances[_id][to] = _supply;
+        balances[_id][_to] = _supply;
         _setTokenURI(_id, _uri);
 
         // Transfer event with mint semantic
-        emit TransferSingle(to, address(0x0), to, _id, _supply);
+        emit TransferSingle(_to, address(0x0), _to, _id, _supply);
         emit URI(_uri, _id);
     }
 
     function _issue(address _to, uint256 _id,  uint256 _supply) internal {
-        require(_to == address(0x0), "Can not issue to zero address");
+        require(_to != address(0x0), "Can not issue to zero address");
         require(creators[_id] != address(0x0), "Token is must already created");
         require(_supply != 0, "Supply should be positive");
 
-        balances[_id][_to] = _supply;
-        balances[_id][_to] = balances[_id][_to].sub(_supply);
+        balances[_id][_to] = balances[_id][_to].add(_supply);
 
         // Transfer event with mint semantic
         emit TransferSingle(_to, address(0x0), _to, _id, _supply);
@@ -1064,9 +1063,19 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     }
 
     function mint(uint256 id, uint8 v, bytes32 r, bytes32 s, Fee[] memory fees, uint256 value, string memory uri) public {
-        // require(isSigner(ecrecover(keccak256(abi.encodePacked(this, id, value, uri)), v, r, s)), "signer should sign mint info");
+        require(isSigner(ecrecover(keccak256(abi.encodePacked(this, id, value, uri)), v, r, s)), "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
+        _mint(baseMinter, msg.sender,  id, fees, value, uri);
+        minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
+
+        emit Mint(msg.sender, id, value, uri);
+    }
+
+    function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
+        require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
+
+        Fee[] memory fees=new Fee[](0);
         _mint(baseMinter, msg.sender,  id, fees, value, uri);
         minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
 
@@ -1083,6 +1092,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
 
         uint256 times = msg.value.div(mintWorkFee);
+        uint256 rewardTimes = (minters[msg.sender].totalPayMintWorks % rewardThresholdWorks).add(times).div(rewardThresholdWorks);
 
         if (msg.value % mintWorkFee != 0) {
             uint256 refundFee = msg.value - mintWorkFee.mul(times);
@@ -1092,13 +1102,13 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
         minters[msg.sender].totalPayMintWorks = minters[msg.sender].totalPayMintWorks.add(times);
 
-        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times);
-
-        if (minters[msg.sender].totalPayMintWorks % rewardThresholdWorks == 0) {
-            times = times.add(1);
+        if (rewardTimes != 0) {
+            minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times.add(rewardTimes));
+        } else {
+            minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times);
         }
 
-        minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times);
+        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times);
     }
 
     function addSigner(address account) public onlyOwner {
