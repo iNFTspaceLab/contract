@@ -904,7 +904,7 @@ contract ERC1155Base is HasSecondarySaleFees, Ownable, ERC1155Metadata_URI, HasC
     }
 
     function _mint(address _from, address _to, uint256 _id, Fee[] memory _fees, uint256 _value, string memory _uri) internal {
-        if (creators[_id] == address(0x0)) {
+        if (keccak256(abi.encodePacked(_tokenURI(_id))) == keccak256(abi.encodePacked(""))) {
             _create(_from, _id, _fees, _value, _uri);
             // SafeMath will throw with insuficient funds _from
             // or if _id is not valid (balance will be 0)
@@ -1012,10 +1012,6 @@ contract SignerRole is Context {
         return _signers.has(account);
     }
 
-    function addSigner(address account) public onlySigner {
-        _addSigner(account);
-    }
-
     function renounceSigner() public {
         _removeSigner(_msgSender());
     }
@@ -1062,11 +1058,13 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         name = "iNFTspaceBlind";
         symbol = "iNFTB";
 
-//        _addSigner(msg.sender);
         baseMinter = msg.sender;
         collection = msg.sender;
         mintWorkFee = _mintWorkFee;
         rewardThresholdWorks = _rewardThresholdWorks;
+
+        transferOwnership(msg.sender);
+
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
     }
 
