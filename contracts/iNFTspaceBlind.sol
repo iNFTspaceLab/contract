@@ -1062,7 +1062,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         name = "iNFTspaceBlind";
         symbol = "iNFTB";
 
-        _addSigner(msg.sender);
+//        _addSigner(msg.sender);
         baseMinter = msg.sender;
         collection = msg.sender;
         mintWorkFee = _mintWorkFee;
@@ -1071,7 +1071,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     }
 
     function mint(uint256 id, uint8 v, bytes32 r, bytes32 s, Fee[] memory fees, uint256 value, string memory uri) public {
-        // require(isSigner(ecrecover(keccak256(abi.encodePacked(this, id, value, uri)), v, r, s)), "signer should sign tokenId");
+        // require(isSigner(ecrecover(keccak256(abi.encodePacked(this, id, value, uri)), v, r, s)), "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
         _mint(baseMinter, msg.sender,  id, fees, value, uri);
