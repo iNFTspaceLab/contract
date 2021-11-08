@@ -1012,10 +1012,6 @@ contract SignerRole is Context {
         return _signers.has(account);
     }
 
-    function renounceSigner() public {
-        _removeSigner(_msgSender());
-    }
-
     function _addSigner(address account) internal {
         _signers.add(account);
         emit SignerAdded(account);
@@ -1026,7 +1022,6 @@ contract SignerRole is Context {
         emit SignerRemoved(account);
     }
 }
-
 
 /**
  * @title iNFTspaceBlind
