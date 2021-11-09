@@ -33,13 +33,17 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
 
   console.log('1. V1 iNFTspace has deployed at:', infgspace.address);
 
-  let waitTime = 60; // 60 s
-  for (var i = 0; i< waitTime; i++){
-    await sleep(1000);
-    if ( i%3 == 0) {
-      console.log('  wait deploy completed after', waitTime - i, " s");
-    }
-  }
+  console.log('   wait iNFTspace deployed, it will token one minute or more，Please be patient ');
+
+  await blind.deployed();
+
+  // let waitTime = 60; // 60 s
+  // for (var i = 0; i< waitTime; i++){
+  //   await sleep(1000);
+  //   if ( i%3 == 0) {
+  //     console.log('  wait deploy completed after', waitTime - i, " s");
+  //   }
+  // }
 
   verifyAddress = infgspace.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
