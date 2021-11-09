@@ -33,7 +33,7 @@ async function main() {
 
     console.log('1. V1 iNFTspaceBlind has deployed at:', blind.address);
 
-    let waitTime = 60; // 1 min
+    let waitTime = 60; // 60s
     for (var i = 0; i< waitTime; i++){
         await sleep(1000);
         if ( i%3 == 0) {

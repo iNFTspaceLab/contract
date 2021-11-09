@@ -1080,7 +1080,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         emit Mint(msg.sender, id, value, uri);
     }
 
-    function batchMint(uint256[] memory ids, uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, Fee[] memory fees, uint256[] memory values, string[] memory uris) public {
+    function mintBatch(uint256[] memory ids, uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, Fee[] memory fees, uint256[] memory values, string[] memory uris) public {
         require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
         for (uint256 i = 0; i < ids.length; i++) {
             mint(ids[i], vs[i], rs[i], ss[i], fees, values[i], uris[i]);
@@ -1155,10 +1155,10 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
     }
 
-    function batchIncreaseMinterWorkTimes(address[] memory  accounts, uint256[] memory  times) public {
-        require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
+    function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times) public {
+        require(accounts.length == times.length, "batch increase parms num is require");
         for (uint256 i = 0; i < accounts.length; i++) {
-            minters[accounts[i]].remainMintWorks = minters[accounts[i]].remainMintWorks.add(times[i]);
+            increaseMinterWorkTimes(accounts[i], times[i]);
         }
 
     }
