@@ -17,6 +17,7 @@
   },
   "scripts": {
     "compile": "npx hardhat compile",
-    "deploy": "npx hardhat deploy"
+    "deploy": "npx hardhat deploy",
+    "deploy blind": "npx hardhat run scripts/003_iNFTspaceBlindV1.deploy.js"
   }
 }
