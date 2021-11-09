@@ -24,6 +24,10 @@ module.exports = {
       default: 1,
     },
   },
+  etherscan: {
+    // Your API key for Etherscan
+    apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4"
+  },
   networks: {
     ropsten: {
       url: 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -129,9 +133,7 @@ module.exports = {
       }
     }
   },
-
-  etherscan: {
-    // Your API key for Etherscan
-    apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4"
+  mocha: {
+    timeout: 1200000
   }
 };

@@ -7,16 +7,16 @@
     "chai": "4.3.4",
     "ethereum-waffle": "3.3.0",
     "ethers": "5.1.4",
-    "hardhat": "2.2.1",
-    "hardhat-abi-exporter": "2.2.1"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "3.4.1-solc-0.7-2",
-    "chai-as-promised": "7.1.1",
+    "hardhat": "2.4.3",
+    "hardhat-abi-exporter": "2.2.1",
     "hardhat-deploy": "^0.8.11",
     "hardhat-deploy-ethers": "^0.3.0-beta.10"
   },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "3.4.1-solc-0.7-2"
+  },
   "scripts": {
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat deploy"
   }
 }
