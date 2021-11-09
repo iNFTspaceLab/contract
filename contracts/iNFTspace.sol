@@ -1302,8 +1302,8 @@ contract ERC721Base is HasSecondarySaleFees, ERC721, HasContractURI, HasTokenURI
      * @dev Constructor function
      */
     constructor ()  public {
-        name = "infgspace";
-        symbol = "";
+        name = "iNFTspace";
+        symbol = "iNFT";
 
         // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
@@ -1378,72 +1378,69 @@ contract ERC721Base is HasSecondarySaleFees, ERC721, HasContractURI, HasTokenURI
 }
 
 /**
- * @title Infgspace
+ * @title iNFTspace
  * @dev the minter can mint token.
  */
-contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721Base {
+contract iNFTspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721Base {
 
     struct Minter {
         bool isMinter;              // minter valid state
         uint256 lastMintTimestamp;  // Last mint timestamp
     }
 
-    uint256 public mintInterval = 24 hours; // Each minter can mint the cycle time
-    uint256 public maxWorks = 0;            // Maximum number of works allowed for mint
-    uint256 public mintedWorks = 0;         // The number of mint works that have been minted
-    uint256 public nextTokenId = 1;
-    address public baseMinter;
+    uint256 public _mintInterval = 24 hours; // Each minter can mint the cycle time
+    uint256 public _maxWorks = 0;            // Maximum number of works allowed for mint
+    uint256 public _mintedWorks = 0;         // The number of mint works that have been minted
+    address public _baseMinter;
 
-    mapping (address => Minter) public minters;
+    mapping (address => Minter) public _minters;
 
     event Mint(address owner, uint256 tokenId, string uri);
     event RegMinter(address owner);
 
 
-    constructor (uint256 _maxWorks) public {
+    constructor (uint256 maxWorks) public {
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
-        maxWorks = _maxWorks;
+        _maxWorks = maxWorks;
         transferOwnership(msg.sender);
-        baseMinter = msg.sender;
+        _baseMinter = msg.sender;
     }
 
-    function mint(string memory tokenURI) public {
-        if (minters[msg.sender].isMinter == false) {
+    function mint(string memory tokenURI, uint256 tokenId) public {
+        if (_minters[msg.sender].isMinter == false) {
             regMinter();
         }
 
-        require(mintedWorks < maxWorks, "Effective casting quota for works require");
+        require(_mintedWorks < _maxWorks, "Effective casting quota for works require");
         require(canMintInInterval(msg.sender), "mint in interval can not mint");
 
-        uint256 __tokenId = nextTokenId;
         Fee[] memory fees=new Fee[](0);
-        _mint(baseMinter, __tokenId, fees);
-        _setTokenURI(__tokenId, tokenURI);
-        _transferFrom(baseMinter, msg.sender, __tokenId);
+        _mint(_baseMinter, tokenId, fees);
+        _setTokenURI(tokenId, tokenURI);
+        _transferFrom(_baseMinter, msg.sender, tokenId);
 
-        nextTokenId = nextTokenId.add(1);
-        minters[msg.sender].lastMintTimestamp = block.timestamp;
-        mintedWorks = mintedWorks.add(1);
+        _minters[msg.sender].lastMintTimestamp = block.timestamp;
+        _mintedWorks = _mintedWorks.add(1);
 
-        emit Mint(msg.sender, __tokenId, tokenURI);
+        emit Mint(msg.sender, tokenId, tokenURI);
     }
 
     function regMinter() public {
-        minters[msg.sender].isMinter = true;
+        _minters[msg.sender].isMinter = true;
 
         emit RegMinter(msg.sender);
     }
 
-    function removeMinter(address _minter) public onlyOwner{
-        minters[_minter].isMinter = false;
+    function removeMinter(address minter) public onlyOwner{
+        _minters[minter].isMinter = false;
     }
 
-    function setMintInterval(uint256 _mintInterval) public onlyOwner {
-        mintInterval = _mintInterval;
+    function setMintInterval(uint256 mintInterval) public onlyOwner {
+        _mintInterval = mintInterval;
     }
 
-    function setBaseMinter(address _baseMinter) public onlyOwner{
-        baseMinter = _baseMinter;
+    function setBaseMinter(address baseMinter) public onlyOwner{
+        _baseMinter = baseMinter;
     }
 
     function setTokenURIPrefix(string memory tokenURIPrefix) public onlyOwner{
@@ -1454,9 +1451,9 @@ contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         _setContractURI(contractURI);
     }
 
-    function canMintInInterval(address _minter) internal view returns (bool) {
-        if(minters[_minter].lastMintTimestamp > 0) {
-            if (block.timestamp.sub(minters[_minter].lastMintTimestamp) > mintInterval) {
+    function canMintInInterval(address minter) internal view returns (bool) {
+        if(_minters[minter].lastMintTimestamp > 0) {
+            if (block.timestamp.sub(_minters[minter].lastMintTimestamp) > _mintInterval) {
                 return true;
             }
             else{
