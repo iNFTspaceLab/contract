@@ -1051,7 +1051,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
     mapping (address => Minter) public minters;
 
-    event PayMintFee(address owner, uint256 payFee, uint256 times);
+    event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime);
     event Mint(address owner, uint256 tokenId, uint256 value, string uri);
     event Burn(address owner, uint256 tokenId, uint256 value);
 
@@ -1070,8 +1070,11 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
     }
 
-    function mint(uint256 id, uint8 v, bytes32 r, bytes32 s, Fee[] memory fees, uint256 value, string memory uri) public {
-        require(isSigner(ecrecover(keccak256(abi.encodePacked(this, id, value, uri)), v, r, s)), "signer should sign mint info");
+    function mint(uint8 v, bytes32 r, bytes32 s, string memory nonce, uint256 id, uint256 value, string memory uri, Fee[] memory fees) public {
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, keccak256(abi.encodePacked(id, value, uri, nonce))));
+
+        require(isSigner(ecrecover(prefixedHash, v, r, s)) == true, "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
         _mint(baseMinter, msg.sender,  id, fees, value, uri);
@@ -1080,21 +1083,11 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         emit Mint(msg.sender, id, value, uri);
     }
 
-    function mintBatch(uint256[] memory ids, uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, Fee[] memory fees, uint256[] memory values, string[] memory uris) public {
-        require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
+    function mintBatch( uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, string[] memory nonces, uint256[] memory ids, uint256[] memory values, string[] memory uris, Fee[] memory fees) public {
+        require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length && ids.length == nonces.length && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
         for (uint256 i = 0; i < ids.length; i++) {
-            mint(ids[i], vs[i], rs[i], ss[i], fees, values[i], uris[i]);
+            mint(vs[i], rs[i], ss[i], nonces[i], ids[i], values[i], uris[i], fees);
         }
-    }
-
-    function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
-        require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
-
-        Fee[] memory fees=new Fee[](0);
-        _mint(baseMinter, msg.sender,  id, fees, value, uri);
-        minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
-
-        emit Mint(msg.sender, id, value, uri);
     }
 
     function burn(address _owner, uint256 _id, uint256 _value) public {
@@ -1123,7 +1116,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
             minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times);
         }
 
-        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times);
+        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times, rewardTimes);
     }
 
     function addSigner(address account) public onlyOwner {
@@ -1161,5 +1154,15 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
             increaseMinterWorkTimes(accounts[i], times[i]);
         }
 
+    }
+
+    function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
+        require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
+
+        Fee[] memory fees=new Fee[](0);
+        _mint(baseMinter, msg.sender,  id, fees, value, uri);
+        minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
+
+        emit Mint(msg.sender, id, value, uri);
     }
 }

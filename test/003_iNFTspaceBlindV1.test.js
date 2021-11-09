@@ -1,16 +1,17 @@
 // We import Chai to use its asserting functions here.
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { keccak256} = require('ethereumjs-util')
+const {BigNumber} = require("ethers");
 
 describe("iNFTspaceBlind V1", function () {
 
   let Blind;
   let hardhatBlind;
   let owner;
-  let singer1;
-  let singer2;
-  let minter1;
-  let minter2;
+  let singer;
+  let baseMinter;
+  let minter;
   let addrs;
 
   let mintWorkFee = "100000000000000000";  //0.1 ether;
@@ -21,7 +22,7 @@ describe("iNFTspaceBlind V1", function () {
   beforeEach(async function () {
     // Get the ContractFactory and Signers here.
     Blind = await ethers.getContractFactory("iNFTspaceBlind");
-    [owner, singer1, singer2, minter1, minter2, ...addrs] = await ethers.getSigners();
+    [owner, singer, baseMinter, minter, ...addrs] = await ethers.getSigners();
 
     hardhatBlind = await Blind.deploy(mintWorkFee, rewardThresholdWorks, contractURI, tokenURIPrefix);
 
@@ -37,17 +38,17 @@ describe("iNFTspaceBlind V1", function () {
 
   describe("Configuration", function () {
     it("Should add singer and remove singer is ok", async function () {
-      // add singer1
-      await hardhatBlind.addSigner(singer1.address);
-      expect(await hardhatBlind.isSigner(singer1.address)).to.equal(true);
+      // add remove singer
+      await hardhatBlind.addSigner(singer.address);
+      expect(await hardhatBlind.isSigner(singer.address)).to.equal(true);
 
-      // add remove singer2
-      await hardhatBlind.addSigner(singer2.address);
-      expect(await hardhatBlind.isSigner(singer2.address)).to.equal(true);
+      // remove singer
+      await hardhatBlind.removeSigner(singer.address);
+      expect(await hardhatBlind.isSigner(singer.address)).to.equal(false);
 
-      // remove singer2
-      await hardhatBlind.removeSigner(singer2.address);
-      expect(await hardhatBlind.isSigner(singer2.address)).to.equal(false);
+      // reset singer
+      await hardhatBlind.addSigner(singer.address);
+      expect(await hardhatBlind.isSigner(singer.address)).to.equal(true);
 
       console.log("\t Configuration test done");
     });
@@ -57,10 +58,30 @@ describe("iNFTspaceBlind V1", function () {
     it("Should pay times and mint is ok", async function () {
       // mint1
       let id = 1;
-      let value = 1;
+      let value = 10;
       let uri = "test ipfs uri";
-      let fee = {recipient:owner.address, value:100};
+      let fee = [{recipient:owner.address, value:100}];
+      let nonce = "12345678"
 
+      // add singer
+      await hardhatBlind.addSigner(singer.address);
+      expect(await hardhatBlind.isSigner(singer.address)).to.equal(true);
+
+      // increase minter work times
+      await  hardhatBlind.connect(singer).increaseMinterWorkTimes(minter.address, 10);
+      let minterInfo = await hardhatBlind.minters(minter.address)
+      expect(minterInfo.remainMintWorks).to.equal(10);
+
+      // mint the nft
+      //  cal sig
+      let mintHash = await ethers.utils.solidityKeccak256(["uint256", "uint256", "string", "string"], [id, value, uri, nonce]);
+      let mintHashBytes = ethers.utils.arrayify(mintHash)
+      let mintSig = await singer.signMessage(mintHashBytes);
+      let sigSplit = await  ethers.utils.splitSignature(mintSig);
+      //  mint
+      await  hardhatBlind.connect(minter).mint(sigSplit.v, sigSplit.r, sigSplit.s, nonce, id, value, uri, fee);
+      let balance = await hardhatBlind.balanceOf(minter.address, id);
+      expect(balance).to.equal(value);
 
       console.log("\t Mint test done");
     });
