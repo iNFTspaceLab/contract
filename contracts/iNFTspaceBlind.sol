@@ -56,7 +56,7 @@ library SafeMath {
     }
 
     /**
-* @dev Mod two numbers, throws on overflow.
+    * @dev Mod two numbers, throws on overflow.
     */
     function mod(uint256 a, uint256 b) internal pure returns (uint256 c) {
         assert(b > 0);
@@ -1107,7 +1107,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
 
         uint256 times = msg.value.div(mintWorkFee);
-        uint256 rewardTimes = (minters[msg.sender].totalPayMintWorks.mod(rewardThresholdWorks).add(times).div(rewardThresholdWorks);
+        uint256 rewardTimes = (minters[msg.sender].totalPayMintWorks.mod(rewardThresholdWorks).add(times)).div(rewardThresholdWorks);
 
         if (msg.value.mod(mintWorkFee)  != 0) {
             uint256 refundFee = msg.value - mintWorkFee.mul(times);
@@ -1151,7 +1151,15 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     }
 
     function increaseMinterWorkTimes(address account, uint256 times) public {
-        require(isSigner(account) == true, "Only singer can increase minter work times ");
+        require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
+    }
+
+    function batchIncreaseMinterWorkTimes(address[] memory  accounts, uint256[] memory  times) public {
+        require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
+        for (uint256 i = 0; i < accounts.length; i++) {
+            minters[accounts[i]].remainMintWorks = minters[accounts[i]].remainMintWorks.add(times[i]);
+        }
+
     }
 }
