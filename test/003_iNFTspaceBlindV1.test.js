@@ -61,7 +61,6 @@ describe("iNFTspaceBlind V1", function () {
       let value = 10;
       let uri = "test ipfs uri";
       let fee = [{recipient:owner.address, value:100}];
-      let nonce = "12345678"
 
       // add singer
       await hardhatBlind.addSigner(singer.address);
@@ -74,12 +73,12 @@ describe("iNFTspaceBlind V1", function () {
 
       // mint the nft
       //  cal sig
-      let mintHash = await ethers.utils.solidityKeccak256(["uint256", "uint256", "string", "string"], [id, value, uri, nonce]);
+      let mintHash = await ethers.utils.solidityKeccak256(["uint160","uint160", "uint256", "uint256", "string"], [hardhatBlind.address,minter.address, id, value, uri]);
       let mintHashBytes = ethers.utils.arrayify(mintHash)
       let mintSig = await singer.signMessage(mintHashBytes);
       let sigSplit = await  ethers.utils.splitSignature(mintSig);
       //  mint
-      await  hardhatBlind.connect(minter).mint(sigSplit.v, sigSplit.r, sigSplit.s, nonce, id, value, uri, fee);
+      await  hardhatBlind.connect(minter).mint(sigSplit.v, sigSplit.r, sigSplit.s, id, value, uri, fee);
       let balance = await hardhatBlind.balanceOf(minter.address, id);
       expect(balance).to.equal(value);
 
@@ -87,4 +86,20 @@ describe("iNFTspaceBlind V1", function () {
     });
   });
 
+  // TODO: 正式上线需要删除
+  describe("Hash", function () {
+    it("Should cal hash is ok", async function () {
+      // mint info
+      let id = 1;
+      let value = 10;
+      let uri = "test ipfs uri";
+
+      // mint info
+      //  cal sig
+      let mintHash = await ethers.utils.solidityKeccak256(["uint160","uint160", "uint256", "uint256", "string"], [hardhatBlind.address,minter.address, id, value, uri]);
+      let contractCalHash = await  hardhatBlind.connect(minter).verifyHash(id, value, uri);
+      expect(mintHash).to.equal(contractCalHash);
+      console.log("\t Hash test done");
+    });
+  });
 });
