@@ -1070,9 +1070,9 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         _registerInterface(bytes4(keccak256('MINT_WITH_ADDRESS')));
     }
 
-    function mint(uint8 v, bytes32 r, bytes32 s, string memory nonce, uint256 id, uint256 value, string memory uri, Fee[] memory fees) public {
+    function mint(uint8 v, bytes32 r, bytes32 s, uint256 id, uint256 value, string memory uri, Fee[] memory fees) public {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, keccak256(abi.encodePacked(id, value, uri, nonce))));
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, keccak256(abi.encodePacked(this, msg.sender, id, value, uri))));
 
         require(isSigner(ecrecover(prefixedHash, v, r, s)) == true, "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
@@ -1083,10 +1083,10 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         emit Mint(msg.sender, id, value, uri);
     }
 
-    function mintBatch( uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss, string[] memory nonces, uint256[] memory ids, uint256[] memory values, string[] memory uris, Fee[] memory fees) public {
-        require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length && ids.length == nonces.length && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
+    function mintBatch( uint8[] memory vs, bytes32[] memory rs, bytes32[] memory ss,  uint256[] memory ids, uint256[] memory values, string[] memory uris, Fee[] memory fees) public {
+        require(ids.length == vs.length && ids.length == rs.length && ids.length == ss.length  && ids.length == values.length && ids.length == uris.length, "batch mint parms num is require");
         for (uint256 i = 0; i < ids.length; i++) {
-            mint(vs[i], rs[i], ss[i], nonces[i], ids[i], values[i], uris[i], fees);
+            mint(vs[i], rs[i], ss[i], ids[i], values[i], uris[i], fees);
         }
     }
 
@@ -1156,6 +1156,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
     }
 
+    // TODO: 以下函数正式上线需要删除
     function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
@@ -1164,5 +1165,9 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
 
         emit Mint(msg.sender, id, value, uri);
+    }
+
+    function verifyHash(uint256 id, uint256 value, string memory uri) public view returns (bytes32){
+        return keccak256(abi.encodePacked(this, msg.sender, id, value, uri));
     }
 }
