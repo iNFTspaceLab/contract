@@ -16,11 +16,11 @@ https://rinkeby.etherscan.io/address/0xF6DA9E98DC9A072F8e2630cb72E613aCC532B129#
 
 ### single deploy contract 
 ```
-npx hardhat --network rinkeby run scripts/003_iNFTspaceBlindV1.deploy.js
+npx hardhat --network rinkeby run scripts/002_iNFTspaceBlindV1.deploy.js
 ```
 ### single test contract
 ```
-npx hardhat test test/003_iNFTspaceBlindV1.test.js
+npx hardhat test test/002_iNFTspaceBlindV1.test.js
 ```
 
 ## TODO:
