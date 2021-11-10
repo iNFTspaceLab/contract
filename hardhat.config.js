@@ -26,7 +26,9 @@ module.exports = {
   },
   etherscan: {
     // Your API key for Etherscan
-    apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4"
+    //apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4" // Etherscan
+    apiKey: "HM458I3G7GRBG9N1RWN5RE9FAZTYQEDKUB" //polygonscan
+
   },
   networks: {
     ropsten: {
@@ -39,6 +41,16 @@ module.exports = {
     },
     mainnet: {
       url: 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+      accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
+    },
+    polygon_mumbai: {
+      chainId: 80001,
+      url: 'https://matic-mumbai.chainstacklabs.com',
+      accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991'],
+    },
+    polygon: {
+      chainId: 137,
+      url: 'https://rpc-mainnet.matic.network',
       accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
     },
   },
