@@ -96,7 +96,7 @@ describe("iNFTspaceBlind V1", function () {
 
       // mint info
       //  cal sig
-      let mintHash = await ethers.utils.solidityKeccak256(["uint160","uint160", "uint256", "uint256", "string"], [hardhatBlind.address,minter.address, id, value, uri]);
+      let mintHash = await ethers.utils.solidityKeccak256(["uint160", "uint256", "uint256", "string"], [hardhatBlind.address, id, value, uri]);
       let contractCalHash = await  hardhatBlind.connect(minter).verifyHash(id, value, uri);
       expect(mintHash).to.equal(contractCalHash);
       console.log("\t Hash test done");
