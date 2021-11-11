@@ -1168,6 +1168,6 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     }
 
     function verifyHash(uint256 id, uint256 value, string memory uri) public view returns (bytes32){
-        return keccak256(abi.encodePacked(this, msg.sender, id, value, uri));
+        return keccak256(abi.encodePacked(this, id, value, uri));
     }
 }
