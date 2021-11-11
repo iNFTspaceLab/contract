@@ -1054,9 +1054,10 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime);
     event Mint(address owner, uint256 tokenId, uint256 value, string uri);
     event Burn(address owner, uint256 tokenId, uint256 value);
+    event IncreaseMinterWorkTimes(address account, uint256 times);
 
 
-    constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
+constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
         name = "iNFTspaceBlind";
         symbol = "iNFTB";
 
@@ -1146,6 +1147,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
     function increaseMinterWorkTimes(address account, uint256 times) public {
         require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
+        emit IncreaseMinterWorkTimes(account, times);
     }
 
     function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times) public {
@@ -1153,7 +1155,6 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
         for (uint256 i = 0; i < accounts.length; i++) {
             increaseMinterWorkTimes(accounts[i], times[i]);
         }
-
     }
 
     // TODO: 以下函数正式上线需要删除
