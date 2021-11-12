@@ -37,13 +37,13 @@ async function main() {
 
     await blind.deployed();
 
-    // let waitTime = 1; // 60s
-    // for (var i = 0; i< waitTime; i++){
-    //     await sleep(1000);
-    //     if ( i%3 == 0) {
-    //         console.log('  wait deploy completed after', waitTime - i, " s");
-    //     }
-    // }
+    let waitTime = 1; // 30 s wait scan indexed
+    for (var i = 0; i< waitTime; i++){
+        await sleep(1000);
+        if ( i%3 == 0) {
+            console.log('  wait deploy completed after', waitTime - i, " s");
+        }
+    }
 
     // verify
     await run("verify:verify", {

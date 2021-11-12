@@ -45,13 +45,13 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
 
   await blind.deployed();
 
-  // let waitTime = 60; // 60s
-  // for (var i = 0; i< waitTime; i++){
-  //   await sleep(1000);
-  //   if ( i%3 == 0) {
-  //     console.log('  wait deploy completed after', waitTime - i, " s");
-  //   }
-  // }
+  let waitTime = 30; // 30 s wait scan indexed
+  for (var i = 0; i< waitTime; i++){
+    await sleep(1000);
+    if ( i%3 == 0) {
+      console.log('  wait deploy completed after', waitTime - i, " s");
+    }
+  }
 
   verifyAddress = infgspace.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
