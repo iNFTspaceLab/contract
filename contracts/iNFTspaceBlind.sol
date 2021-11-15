@@ -1051,10 +1051,10 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
     mapping (address => Minter) public minters;
 
-    event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime, string extData);
+    event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime, bytes extData);
     event Mint(address owner, uint256 tokenId, uint256 value, string uri);
     event Burn(address owner, uint256 tokenId, uint256 value);
-    event IncreaseMinterWorkTimes(address account, uint256 times);
+    event IncreaseMinterWorkTimes(address account, uint256 times, bytes extData);
 
 
 constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
@@ -1097,7 +1097,7 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         emit Burn(_owner, _id, _value);
     }
 
-    function payMintFee(string memory extData) public payable {
+    function payMintFee(bytes memory extData) public payable {
         require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
 
         uint256 times = msg.value.div(mintWorkFee);
@@ -1144,16 +1144,16 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         mintWorkFee = _mintWorkFee;
     }
 
-    function increaseMinterWorkTimes(address account, uint256 times) public {
+    function increaseMinterWorkTimes(address account, uint256 times, bytes memory  extData) public {
         require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
-        emit IncreaseMinterWorkTimes(account, times);
+        emit IncreaseMinterWorkTimes(account, times, extData);
     }
 
-    function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times) public {
+    function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times, bytes[] memory  extData) public {
         require(accounts.length == times.length, "batch increase parms num is require");
         for (uint256 i = 0; i < accounts.length; i++) {
-            increaseMinterWorkTimes(accounts[i], times[i]);
+            increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
     }
 
