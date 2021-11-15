@@ -1051,7 +1051,7 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
     mapping (address => Minter) public minters;
 
-    event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime);
+    event PayMintFee(address owner, uint256 payFee, uint256 payTimes, uint256 rewardTime, string extData);
     event Mint(address owner, uint256 tokenId, uint256 value, string uri);
     event Burn(address owner, uint256 tokenId, uint256 value);
     event IncreaseMinterWorkTimes(address account, uint256 times);
@@ -1097,7 +1097,7 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         emit Burn(_owner, _id, _value);
     }
 
-    function payMintFee() public payable {
+    function payMintFee(string memory extData) public payable {
         require(msg.value >= mintWorkFee, "The digital currency that needs to be paid is equal to mint's handling fee require");
 
         uint256 times = msg.value.div(mintWorkFee);
@@ -1117,7 +1117,7 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
             minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.add(times);
         }
 
-        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times, rewardTimes);
+        emit PayMintFee(msg.sender, mintWorkFee.mul(times), times, rewardTimes, extData);
     }
 
     function addSigner(address account) public onlyOwner {
