@@ -61,7 +61,8 @@ module.exports = {
     },
 	bsc_testnet: {
       chainId: 97,
-      url: 'https://data-seed-prebsc-1-s2.binance.org:8545/',
+      url: 'https://data-seed-prebsc-1-s3.binance.org:8545/',
+      gasPrice: 10000000000,
       accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
     },
   },
