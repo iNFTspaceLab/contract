@@ -14,7 +14,7 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     MaxWorks,
   ];
 
-  const infgspace = await deploy('iNFTspace', {...options, args: params});
+  const infgspace = await deploy('Infgspace', {...options, args: params});
 
   if (network.live) {
     signer = await ethers.getNamedSigner('deployer');
@@ -23,7 +23,7 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     signer = await ethers.getSigner(signer);
   }
 
-  console.log('1. V1 iNFTspace has deployed at:', infgspace.address);
+  console.log('1. V1 Infgspace has deployed at:', infgspace.address);
 
   verifyAddress = infgspace.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
@@ -31,10 +31,10 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     address: verifyAddress,
     constructorArguments: params
   });
-  console.log('1. V1 iNFTspace has verifyed');
+  console.log('1. V1 Infgspace has verifyed');
 
   return network.live;
 };
 
-func.id = 'deploy_iNFTspace_v1';
+func.id = 'deploy_Infgspace_v1';
 module.exports = func;
