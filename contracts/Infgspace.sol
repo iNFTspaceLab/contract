@@ -1302,8 +1302,8 @@ contract ERC721Base is HasSecondarySaleFees, ERC721, HasContractURI, HasTokenURI
      * @dev Constructor function
      */
     constructor ()  public {
-        name = "iNFTspace";
-        symbol = "iNFT";
+        name = "infgspace";
+        symbol = "";
 
         // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
@@ -1378,10 +1378,10 @@ contract ERC721Base is HasSecondarySaleFees, ERC721, HasContractURI, HasTokenURI
 }
 
 /**
- * @title iNFTspace
+ * @title Infgspace
  * @dev the minter can mint token.
  */
-contract iNFTspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721Base {
+contract Infgspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721Base {
 
     struct Minter {
         bool isMinter;              // minter valid state

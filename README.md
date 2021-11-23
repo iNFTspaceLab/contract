@@ -1,4 +1,4 @@
-# iNFTspaceContract
+# InfgspaceContract
 
 ## install depends
 npm install
