@@ -26,8 +26,9 @@ module.exports = {
   },
   etherscan: {
     // Your API key for Etherscan
-    apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4" // Etherscan
+    //apiKey: "QHSTPZUM8UCKX3RY6TTUI2YIAXYCIKK7I4" // Etherscan
     //apiKey: "HM458I3G7GRBG9N1RWN5RE9FAZTYQEDKUB" //polygonscan
+	apiKey: "JK3XU5RQYNBR83IZAUXSQRUU9ICWW6BVYR" //bscscan
 
   },
   networks: {
@@ -51,6 +52,16 @@ module.exports = {
     polygon: {
       chainId: 137,
       url: 'https://rpc-mainnet.matic.network',
+      accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
+    },
+	 bsc_mainnet: {
+      chainId: 56,
+      url: 'https://bsc-dataseed1.defibit.io/',
+      accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
+    },
+	bsc_testnet: {
+      chainId: 97,
+      url: 'https://data-seed-prebsc-1-s2.binance.org:8545/',
       accounts: ['e85410ce015417a562ba31b61e0d77ef5fe8183905d82777ca4a3cd9b7237991']
     },
   },
