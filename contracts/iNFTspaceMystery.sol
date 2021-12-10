@@ -1031,13 +1031,13 @@ contract SignerRole is Context {
 }
 
 /**
- * @title iNFTspaceBlind
+ * @title iNFTspaceMystery
  * @dev the minter can mint and burn token.
  */
-contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
+contract iNFTspaceMystery is Ownable, SignerRole, ERC1155Base {
 
     struct Minter {
-        uint256 totalPayMintWorks;  // total pay mint blinds
+        uint256 totalPayMintWorks;  // total pay mint mysterys
         uint256 remainMintWorks;    // remain minted works
     }
 
@@ -1058,8 +1058,8 @@ contract iNFTspaceBlind is Ownable, SignerRole, ERC1155Base {
 
 
 constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
-        name = "iNFTspaceBlind";
-        symbol = "iNFTB";
+        name = "iNFTspaceMystery";
+        symbol = "iNFTM";
 
         baseMinter = msg.sender;
         collection = msg.sender;
@@ -1155,20 +1155,5 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         for (uint256 i = 0; i < accounts.length; i++) {
             increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
-    }
-
-    // TODO: 以下函数正式上线需要删除
-    function mintWithoutFeeAndSign(uint256 id, uint256 value, string memory uri) public {
-        require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
-
-        Fee[] memory fees=new Fee[](0);
-        _mint(baseMinter, msg.sender,  id, fees, value, uri);
-        minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
-
-        emit Mint(msg.sender, id, value, uri);
-    }
-
-    function verifyHash(uint256 id, uint256 value, string memory uri) public view returns (bytes32){
-        return keccak256(abi.encodePacked(this, id, value, uri));
     }
 }

@@ -30,7 +30,7 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
       tokenURIPrefix,
   ];
 
-  const infgspace = await deploy('iNFTspaceBlind', {...options, args: params});
+  const contract = await deploy('iNFTspaceMystery', {...options, args: params});
 
   if (network.live) {
     signer = await ethers.getNamedSigner('deployer');
@@ -39,11 +39,11 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     signer = await ethers.getSigner(signer);
   }
 
-  console.log('1. V1 iNFTspaceBlind has deployed at:', infgspace.address);
+  console.log('1. V1 iNFTspaceMystery has deployed at:', contract.address);
 
-  console.log('    wait iNFTspaceBlind deployed, it will token one minute or more，Please be patient ');
+  console.log('    wait iNFTspaceMystery deployed, it will token one minute or more，Please be patient ');
 
-  await blind.deployed();
+  await contract.deployed();
 
   let waitTime = 30; // 30 s wait scan indexed
   for (var i = 0; i< waitTime; i++){
@@ -53,16 +53,16 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     }
   }
 
-  verifyAddress = infgspace.address;
+  verifyAddress = contract.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
   await run("verify:verify", {
     address: verifyAddress,
     constructorArguments: params
   });
-  console.log('1. V1 iNFTspaceBlind has verifyed');
+  console.log('1. V1 iNFTspaceMystery has verifyed');
 
   return network.live;
 };
 
-func.id = 'deploy_iNFTspaceBlind_v1';
+func.id = 'deploy_iNFTspaceMystery_v1';
 module.exports = func;

@@ -22,7 +22,7 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     MaxWorks,
   ];
 
-  const infgspace = await deploy('iNFTspace', {...options, args: params});
+  const contract = await deploy('iNFTspace', {...options, args: params});
 
   if (network.live) {
     signer = await ethers.getNamedSigner('deployer');
@@ -31,11 +31,11 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     signer = await ethers.getSigner(signer);
   }
 
-  console.log('1. V1 iNFTspace has deployed at:', infgspace.address);
+  console.log('1. V1 iNFTspace has deployed at:', contract.address);
 
   console.log('   wait iNFTspace deployed, it will token one minute or more，Please be patient ');
 
-  await blind.deployed();
+  await contract.deployed();
 
   let waitTime = 30; // 30 s wait scan indexed
   for (var i = 0; i< waitTime; i++){
@@ -45,7 +45,7 @@ const func = async ({ getNamedAccounts, deployments, network }) => {
     }
   }
 
-  verifyAddress = infgspace.address;
+  verifyAddress = contract.address;
   // verifyAddress = '0xEd4aca02bC521641b6eDdCD1e3C7c404B5134404';
   await run("verify:verify", {
     address: verifyAddress,
