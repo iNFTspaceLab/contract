@@ -20,7 +20,7 @@ npx hardhat --network bsc_testnet run scripts/001_iNFTspaceV1.deploy.js
 ```
 ### single test contract
 ```
-npx hardhat test test/002_iNFTspaceBlindV1.test.js
+npx hardhat test test/002_iNFTspaceMysteryV1.test.js
 ```
 
 ## TODO:

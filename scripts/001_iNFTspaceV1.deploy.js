@@ -20,16 +20,16 @@ async function main() {
     ];
 
     // deploy
-    const blind = await deploy('iNFTspace', {
+    const contract = await deploy('iNFTspace', {
        from: deployer.address,
        args: params
     }).then(s => ethers.getContractAt(s.abi, s.address, deployer));
 
-    console.log('1. V1 iNFTspace has deployed at:', blind.address);
+    console.log('1. V1 iNFTspace has deployed at:', contract.address);
 
     console.log('    wait iNFTspace deployed, it will token one minute or more，Please be patient ');
 
-    await blind.deployed();
+    await contract.deployed();
 
     let waitTime = 1; // 30 s wait scan indexed
     for (var i = 0; i< waitTime; i++){
@@ -41,7 +41,7 @@ async function main() {
 
     // verify
     await run("verify:verify", {
-        address: blind.address,
+        address: contract.address,
         constructorArguments: params
     });
 
