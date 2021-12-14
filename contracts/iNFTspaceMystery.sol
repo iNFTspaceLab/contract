@@ -1039,6 +1039,7 @@ contract iNFTspaceMystery is Ownable, SignerRole, ERC1155Base {
     struct Minter {
         uint256 totalPayMintWorks;  // total pay mint mysterys
         uint256 remainMintWorks;    // remain minted works
+        uint256 giftMintWorks;      // give gift Mint works;
     }
 
     string public name;
@@ -1147,11 +1148,26 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
     function increaseMinterWorkTimes(address account, uint256 times, bytes memory  extData) public {
         require(isSigner(msg.sender) == true, "Only singer can increase minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.add(times);
+        minters[account].giftMintWorks = minters[account].giftMintWorks.add(times);
         emit IncreaseMinterWorkTimes(account, times, extData);
     }
 
     function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times, bytes[] memory  extData) public {
-        require(accounts.length == times.length, "batch increase parms num is require");
+        require(accounts.length == times.length, "batch increase params num is require");
+        for (uint256 i = 0; i < accounts.length; i++) {
+            increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
+        }
+    }
+
+    function decreaseMinterWorkTimes(address account, uint256 times, bytes memory  extData) public {
+        require(isSigner(msg.sender) == true, "Only singer can decrease minter work times ");
+        minters[account].remainMintWorks = minters[account].remainMintWorks.sub(times);
+        minters[account].giftMintWorks = minters[account].giftMintWorks.sub(times);
+        emit IncreaseMinterWorkTimes(account, times, extData);
+    }
+
+    function decreaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times, bytes[] memory  extData) public {
+        require(accounts.length == times.length, "batch decrease params num is require");
         for (uint256 i = 0; i < accounts.length; i++) {
             increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
