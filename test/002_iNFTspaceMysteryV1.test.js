@@ -2,7 +2,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { keccak256} = require('ethereumjs-util')
-const {BigNumber} = require("ethers");
+const {BigNumber, Bytes} = require("ethers");
 
 describe("iNFTspaceMystery V1", function () {
 
@@ -67,13 +67,14 @@ describe("iNFTspaceMystery V1", function () {
       expect(await hardhatMystery.isSigner(singer.address)).to.equal(true);
 
       // increase minter work times
-      await  hardhatMystery.connect(singer).increaseMinterWorkTimes(minter.address, 10);
+      await  hardhatMystery.connect(singer).increaseMinterWorkTimes(minter.address, 10, []);
       let minterInfo = await hardhatMystery.minters(minter.address)
       expect(minterInfo.remainMintWorks).to.equal(10);
 
       // mint the nft
       //  cal sig
-      let mintHash = await ethers.utils.solidityKeccak256(["uint160","uint160", "uint256", "uint256", "string"], [hardhatMystery.address,minter.address, id, value, uri]);
+      let chainId = (await ethers.provider.getNetwork()).chainId
+      let mintHash = await ethers.utils.solidityKeccak256(["uint256", "uint160","uint160", "uint256", "uint256", "string"], [chainId, hardhatMystery.address,minter.address, id, value, uri]);
       let mintHashBytes = ethers.utils.arrayify(mintHash)
       let mintSig = await singer.signMessage(mintHashBytes);
       let sigSplit = await  ethers.utils.splitSignature(mintSig);
@@ -83,23 +84,6 @@ describe("iNFTspaceMystery V1", function () {
       expect(balance).to.equal(value);
 
       console.log("\t Mint test done");
-    });
-  });
-
-  // TODO: 正式上线需要删除
-  describe("Hash", function () {
-    it("Should cal hash is ok", async function () {
-      // mint info
-      let id = 1;
-      let value = 10;
-      let uri = "test ipfs uri";
-
-      // mint info
-      //  cal sig
-      let mintHash = await ethers.utils.solidityKeccak256(["uint160", "uint256", "uint256", "string"], [hardhatMystery.address, id, value, uri]);
-      let contractCalHash = await  hardhatMystery.connect(minter).verifyHash(id, value, uri);
-      expect(mintHash).to.equal(contractCalHash);
-      console.log("\t Hash test done");
     });
   });
 });
