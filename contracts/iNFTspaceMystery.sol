@@ -1074,7 +1074,7 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
 
     function mint(uint8 v, bytes32 r, bytes32 s, uint256 id, uint256 value, string memory uri, Fee[] memory fees) public {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, keccak256(abi.encodePacked(this, msg.sender, id, value, uri))));
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, keccak256(abi.encodePacked(getChainId(), this, msg.sender, id, value, uri))));
 
         require(isSigner(ecrecover(prefixedHash, v, r, s)) == true, "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
@@ -1171,5 +1171,11 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         for (uint256 i = 0; i < accounts.length; i++) {
             increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
+    }
+
+    function getChainId() internal pure returns (uint) {
+        uint256 chainId;
+        assembly {chainId := chainid()}
+        return chainId;
     }
 }
