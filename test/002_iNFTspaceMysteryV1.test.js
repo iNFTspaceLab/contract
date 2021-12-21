@@ -83,6 +83,17 @@ describe("iNFTspaceMystery V1", function () {
       let balance = await hardhatMystery.balanceOf(minter.address, id);
       expect(balance).to.equal(value);
 
+      // increase minter work times
+      await  hardhatMystery.connect(singer).increaseMinterWorkTimes(minter.address, 10, []);
+      minterInfo = await hardhatMystery.minters(minter.address)
+      expect(minterInfo.remainMintWorks).to.equal(10);
+
+      // mint again nft
+      //  mint
+      await  hardhatMystery.connect(minter).mint(sigSplit.v, sigSplit.r, sigSplit.s, id, value, uri, fee);
+      balance = await hardhatMystery.balanceOf(minter.address, id);
+      expect(balance).to.equal(value*2);
+
       console.log("\t Mint test done");
     });
   });

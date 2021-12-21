@@ -911,7 +911,7 @@ contract ERC1155Base is HasSecondarySaleFees, Ownable, ERC1155Metadata_URI, HasC
     }
 
     function _mint(address _from, address _to, uint256 _id, Fee[] memory _fees, uint256 _value, string memory _uri) internal {
-        if (keccak256(abi.encodePacked(_tokenURI(_id))) == keccak256(abi.encodePacked(""))) {
+        if (keccak256(abi.encodePacked(_tokenURI(_id))) == keccak256(abi.encodePacked(tokenURIPrefix))) {
             _create(_from, _id, _fees, _value, _uri);
             // SafeMath will throw with insuficient funds _from
             // or if _id is not valid (balance will be 0)
