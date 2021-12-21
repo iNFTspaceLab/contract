@@ -15,7 +15,7 @@ async function main() {
     const mintWorkFee = "100000000000000000";  //0.1 ether;
     const rewardThresholdWorks = 10;
     const contractURI = "";
-    const tokenURIPrefix = "";
+    const tokenURIPrefix = "ipfs://";
 
     // Construction parameters
     const params = [
