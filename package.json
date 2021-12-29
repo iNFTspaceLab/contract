@@ -18,6 +18,6 @@
   "scripts": {
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat deploy",
-    "deploy mystery": "npx hardhat run scripts/002_iNFTspaceMysteryV1.deploy.js"
+    "deploy mystery": "npx hardhat run scripts/deploy.iNFTspaceMysteryV1.js"
   }
 }
