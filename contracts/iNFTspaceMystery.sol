@@ -1056,6 +1056,7 @@ contract iNFTspaceMystery is Ownable, SignerRole, ERC1155Base {
     event Mint(address owner, uint256 tokenId, uint256 value, string uri);
     event Burn(address owner, uint256 tokenId, uint256 value);
     event IncreaseMinterWorkTimes(address account, uint256 times, bytes extData);
+    event DecreaseMinterWorkTimes(address account, uint256 times, bytes extData);
 
 
 constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory contractURI, string memory tokenURIPrefix) ERC1155Base(contractURI, tokenURIPrefix) public {
@@ -1079,8 +1080,9 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         require(isSigner(ecrecover(prefixedHash, v, r, s)) == true, "signer should sign mint info");
         require(minters[msg.sender].remainMintWorks >= value, "mint remain time is require");
 
-        _mint(baseMinter, msg.sender,  id, fees, value, uri);
         minters[msg.sender].remainMintWorks = minters[msg.sender].remainMintWorks.sub(value);
+
+        _mint(baseMinter, msg.sender,  id, fees, value, uri);
 
         emit Mint(msg.sender, id, value, uri);
     }
@@ -1130,18 +1132,22 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
     }
 
     function setBaseMinter(address _baseMinter) public onlyOwner{
+        require(_baseMinter != address(0), "Invalid Base Minter");
         baseMinter = _baseMinter;
     }
 
     function setRewardThresholdWorks(uint256 _rewardThresholdWorks) public onlyOwner{
+        require(_rewardThresholdWorks > 0, "Threshold Zero");
         rewardThresholdWorks = _rewardThresholdWorks;
     }
 
     function setCollection(address payable _collection) public onlyOwner {
+        require(_collection != address(0), "Invalid Collection");
         collection = _collection;
     }
 
     function setMintWorkFee(uint256 _mintWorkFee) public onlyOwner {
+        require(_mintWorkFee > 0, "mint Work Fee Zero");
         mintWorkFee = _mintWorkFee;
     }
 
@@ -1153,7 +1159,7 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
     }
 
     function increaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times, bytes[] memory  extData) public {
-        require(accounts.length == times.length, "batch increase params num is require");
+        require(accounts.length == times.length && extData.length == times.length, "batch increase params num is require");
         for (uint256 i = 0; i < accounts.length; i++) {
             increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
@@ -1163,13 +1169,13 @@ constructor(uint256 _mintWorkFee, uint256 _rewardThresholdWorks, string memory c
         require(isSigner(msg.sender) == true, "Only singer can decrease minter work times ");
         minters[account].remainMintWorks = minters[account].remainMintWorks.sub(times);
         minters[account].giftMintWorks = minters[account].giftMintWorks.sub(times);
-        emit IncreaseMinterWorkTimes(account, times, extData);
+        emit DecreaseMinterWorkTimes(account, times, extData);
     }
 
     function decreaseMinterWorkTimesBatch(address[] memory  accounts, uint256[] memory  times, bytes[] memory  extData) public {
-        require(accounts.length == times.length, "batch decrease params num is require");
+        require(accounts.length == times.length && extData.length == times.length, "batch decrease params num is require");
         for (uint256 i = 0; i < accounts.length; i++) {
-            increaseMinterWorkTimes(accounts[i], times[i], extData[i]);
+            decreaseMinterWorkTimes(accounts[i], times[i], extData[i]);
         }
     }
 
