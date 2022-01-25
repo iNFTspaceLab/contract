@@ -1415,12 +1415,13 @@ contract iNFTspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
         require(canMintInInterval(msg.sender), "mint in interval can not mint");
 
         Fee[] memory fees=new Fee[](0);
-        _mint(_baseMinter, tokenId, fees);
-        _setTokenURI(tokenId, tokenURI);
-        _transferFrom(_baseMinter, msg.sender, tokenId);
 
         _minters[msg.sender].lastMintTimestamp = block.timestamp;
         _mintedWorks = _mintedWorks.add(1);
+
+        _mint(_baseMinter, tokenId, fees);
+        _setTokenURI(tokenId, tokenURI);
+        _transferFrom(_baseMinter, msg.sender, tokenId);
 
         emit Mint(msg.sender, tokenId, tokenURI);
     }
@@ -1440,6 +1441,7 @@ contract iNFTspace is Ownable, IERC721, IERC721Metadata, ERC721Burnable, ERC721B
     }
 
     function setBaseMinter(address baseMinter) public onlyOwner{
+        require(baseMinter != address(0), "Invalid Minter");
         _baseMinter = baseMinter;
     }
 
